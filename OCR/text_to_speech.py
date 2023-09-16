@@ -1,19 +1,18 @@
 from gtts import gTTS
 import PyPDF2 as pdf
 from io import BytesIO
-def text_to_speech(book):
-    
-    # file = pdf.PdfReader(book)
-    
+import requests
+from bs4 import BeautifulSoup
+
+def text_to_speech(text):
     mp3_fo = BytesIO()
-    text=book
-    
-    # for page in file.pages:
-    #     text +=page.extract_text()
-    
     speech = gTTS(text, lang='en')
     speech.write_to_fp(mp3_fo)
-    speech.save('mp3s/1.mp3')
-
-    # mp3_fo.seek(0)
+    mp3_fo.seek(0)
     return mp3_fo
+
+def get_text_webpage(url):
+    r = requests.get(url)  
+    soup = BeautifulSoup(r.text, 'html.parser')
+    text = soup.get_text()
+    return text

@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 
 from preprocessing import preprocessing
 from OCR import OCR
@@ -38,11 +38,23 @@ def ocr_url():
 @app.route('/img', methods=["POST"])
 def ocr_img():
     img = request.files['image']
+    name = img.filename
+
     preprocessed_img = preprocessing(img)
     row_text = OCR(preprocessed_img)
     final_text = text_correction(row_text)
     audio = text_to_speech(final_text)
-    return send_file(audio, mimetype='audio/mp3')
+    return jsonify(
+            {
+                "msg": "success",
+                "name": name
+            }
+        )
+
+
+@app.route('/audio', methods=["GET"])
+def ocr_audio():
+    return send_file("mp3s/1.mp3", mimetype='audio/mp3')
  
 if __name__ == '__main__':
     app.run(debug=True)
